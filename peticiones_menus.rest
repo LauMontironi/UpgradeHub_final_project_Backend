@@ -14,3 +14,37 @@ GET {{host}}:{{port}}/menu/22-05-2024
 
 ### ❌ GET menu por fecha (404 no existe)
 GET {{host}}:{{port}}/menu/2025-01-01
+
+### ======================================================
+### ✅ MENUS (admin)
+### ======================================================
+
+### ➕ POST crear menú (ADMIN)
+POST {{host}}:{{port}}/menu/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIE1vbnRpcm9uaSIsInJvbCI6ImNsaWVudGUiLCJleHAiOjE3NzA0MDc3MDl9.Foz5wW1xsB4egXz7io6tXiu_o9QMBB004JgfXL6RpoI
+Content-Type: application/json
+
+{
+  "fecha": "2024-06-01",
+  "nombre": "Menú del Día: Pollo",
+  "descripcion": "Pollo al horno + guarnición + bebida",
+  "foto_url": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600",
+  "precio": 13.90
+}
+
+### ✏️ PUT actualizar menú (ADMIN)
+PUT {{host}}:{{port}}/menu/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIE1vbnRpcm9uaSIsInJvbCI6ImNsaWVudGUiLCJleHAiOjE3NzA0MDc3MDl9.Foz5wW1xsB4egXz7io6tXiu_o9QMBB004JgfXL6RpoI
+Content-Type: application/json
+
+{
+  "fecha": "2024-06-01",
+  "nombre": "Menú del Día: Pollo (Editado)",
+  "descripcion": "Pollo + guarnición + postre",
+  "foto_url": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600",
+  "precio": 14.50
+}
+
+### 🗑 DELETE borrar menú (ADMIN)
+DELETE {{host}}:{{port}}/menu/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIE1vbnRpcm9uaSIsInJvbCI6ImNsaWVudGUiLCJleHAiOjE3NzA0MDc3MDl9.Foz5wW1xsB4egXz7io6tXiu_o9QMBB004JgfXL6RpoI

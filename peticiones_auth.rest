@@ -2,7 +2,7 @@
 @port = 8000
 
 
-### ##➕ POST /auth/register
+### ##➕ POST /auth/register se regustra por defecto como ocliente 
 
 POST {{host}}:{{port}}/auth/register
 Content-Type: application/json

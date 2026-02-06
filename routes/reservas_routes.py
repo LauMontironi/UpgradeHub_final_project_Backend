@@ -6,8 +6,8 @@ from models.reserva_model import ReservaCreate, ReservaReview
 router = APIRouter()
 
 @router.post("", status_code=201)
-async def create_reserva(payload: ReservaCreate, user=Depends(get_current_user)):
-    return await reservas_controllers.create_reserva(payload, user)
+async def create_reserva(reserva: ReservaCreate, user=Depends(get_current_user)):
+    return await reservas_controllers.create_reserva(reserva, user)
 
 @router.get("/me", status_code=200)
 async def get_my_reservas(user=Depends(get_current_user)):
@@ -18,8 +18,8 @@ async def cancel_reserva(reserva_id: int, user=Depends(get_current_user)):
     return await reservas_controllers.cancel_reserva(reserva_id, user)
 
 @router.patch("/{reserva_id}/review", status_code=200)
-async def add_review(reserva_id: int, payload: ReservaReview, user=Depends(get_current_user)):
-    return await reservas_controllers.add_review(reserva_id, payload, user)
+async def add_review(reserva_id: int, reserva: ReservaReview, user=Depends(get_current_user)):
+    return await reservas_controllers.add_review(reserva_id, reserva, user)
 
 @router.get("", status_code=200)
 async def get_all_reservas(admin=Depends(is_admin)):

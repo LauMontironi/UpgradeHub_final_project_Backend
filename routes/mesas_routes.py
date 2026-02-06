@@ -10,12 +10,12 @@ async def get_mesas():
     return await mesas_controllers.get_mesas()
 
 @router.post("", status_code=201)
-async def create_mesa(payload: MesaCreate, admin=Depends(is_admin)):
-    return await mesas_controllers.create_mesa(payload)
+async def create_mesa(mesa: MesaCreate, admin=Depends(is_admin)):
+    return await mesas_controllers.create_mesa(mesa)
 
 @router.put("/{mesa_id}", status_code=200)
-async def update_mesa(mesa_id: int, payload: MesaUpdate, admin=Depends(is_admin)):
-    return await mesas_controllers.update_mesa(mesa_id, payload)
+async def update_mesa(mesa_id: int, mesa: MesaUpdate, admin=Depends(is_admin)):
+    return await mesas_controllers.update_mesa(mesa_id, mesa)
 
 @router.delete("/{mesa_id}", status_code=200)
 async def delete_mesa(mesa_id: int, admin=Depends(is_admin)):

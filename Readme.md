@@ -382,18 +382,4 @@ Validaciones backend obligatorias:
 ✔ GET usuario
 ✔ GET menús
 
-🟡 Falta implementar (solo controllers y peticiones.rest):
-
-CRUD MENÚS (admin)
-
-CRUD MESAS (admin)
-
-POST RESERVA
-
-GET RESERVAS usuario
-
-CANCELAR RESERVA
-
-RESEÑA
-
-GET RESERVAS admin
+🟡 Falta chequear que esten todas las rutas y peticiones uqe necesitamos y verificar que funcionen en request, por ejenpki admin es Admin Principal admin#restaurante,com ckave admin 123 y este deberia poder hacr post put delete de menu pero laura clienta no .

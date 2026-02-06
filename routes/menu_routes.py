@@ -26,15 +26,15 @@ async def get_menus_by_fecha(fecha: str):
 # POST /menus (admin) → crear menú
 
 @router.post("", status_code=201)
-async def create_menu(payload: MenuCreate, admin=Depends(is_admin)):
-    return await menu_controllers.create_menu(payload)
+async def create_menu(menu: MenuCreate, admin=Depends(is_admin)):
+    return await menu_controllers.create_menu(menu)
 
 
 # PUT /menus/{id} (admin)
 
 @router.put("/{menu_id}", status_code=200)
-async def update_menu(menu_id: str, payload: MenuUpdate, admin=Depends(is_admin)):
-    return await menu_controllers.update_menu (int((menu_id)), payload)
+async def update_menu(menu_id: str, menu: MenuUpdate, admin=Depends(is_admin)):
+    return await menu_controllers.update_menu (int((menu_id)), menu)
 
 
 # DELETE /menus/{id} (admin)
