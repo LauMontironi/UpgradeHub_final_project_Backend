@@ -222,3 +222,71 @@ Para reservar y pedir, el cliente debe estar logueado.
 El admin gestiona lo estructural del restaurante (mesas, menús) y revisa reseñas/actividad.
 
 La base de datos conecta todo con relaciones: usuarios → reservas/pedidos, menús → pedidos, mesas → reservas.
+
+🧩 Cómo funcionará tu sistema
+1️⃣ Carta del restaurante (NUEVO)
+
+El usuario puede entrar y ver todos los platos individuales:
+
+Categorías:
+
+Entrantes
+
+Sashimi
+
+Nigiris
+
+Makis
+
+Bao
+
+Postres
+
+Cada plato tendrá:
+
+nombre
+
+descripción
+
+precio
+
+ingredientes
+
+alérgenos
+
+información nutricional
+
+imagen
+
+GET /platos
+GET /platos/{id}
+GET /platos?categoria=sashimi
+Esto es la carta digital del restaurante.
+
+Menús del día
+Ejemplo:
+
+Menú 1 — Lunes
+
+Entrante: Gyozas
+
+Principal: Sushi variado
+
+Postre: Mochi
+
+Precio: 14,90 €
+
+Descripción
+
+Alérgenos
+
+Info nutricional
+
+Imagen (una de tus fotos)
+
+| Función            | Tabla    | Quién la usa |
+| ------------------ | -------- | ------------ |
+| Ver carta completa | `platos` | Clientes     |
+| Gestionar carta    | `platos` | Admin        |
+| Ver menú del día   | `menus`  | Clientes     |
+| Crear/editar menús | `menus`  | Admin        |

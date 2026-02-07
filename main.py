@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes  import mesas_routes, test_db_routes, auth_routes, usuarios_routes, reservas_routes, menu_routes
+from routes  import mesas_routes, test_db_routes, auth_routes, usuarios_routes, reservas_routes, menu_routes, platos_routes, menus_semanales_routes
 
 
 
@@ -23,3 +23,7 @@ app.include_router(menu_routes.router, prefix='/menu', tags= ['menu'])
 app.include_router(reservas_routes.router, prefix="/reservas", tags=["reservas"])
 
 app.include_router(mesas_routes.router, prefix="/mesas", tags=["mesas"])
+
+app.include_router(platos_routes.router, prefix="/platos", tags=["platos"])
+
+app.include_router(menus_semanales_routes.router, prefix="/menus-semanales", tags=["menus-semanales"])

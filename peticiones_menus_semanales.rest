@@ -1,0 +1,11 @@
+@host = http://127.0.0.1
+@port = 8000
+
+
+### ver listado de menues: ( esto sera en el boton ver menu) 
+
+GET {{host}}:{{port}}/menus-semanales
+
+###Ver un menú completo con sus 3 platos: ( esto sera en cada uno cuando se clique) 
+###
+GET {{host}}:{{port}}/menus-semanales/1
