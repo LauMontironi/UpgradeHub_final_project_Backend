@@ -6,8 +6,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 async def get_conexion():
-    # ✅ SSL por defecto (usa CAs del sistema del contenedor)
-    ssl_context = ssl.create_default_context()
+    ca_path = os.getenv("MYSQL_CA_CERT", "db/aiven-ca.pem")
+
+    ssl_context = ssl.create_default_context(cafile=ca_path)
 
     return await aiomysql.connect(
         host=os.getenv("MYSQL_HOST"),
@@ -15,5 +16,6 @@ async def get_conexion():
         user=os.getenv("MYSQL_USER"),
         password=os.getenv("MYSQL_PASSWORD"),
         db=os.getenv("MYSQL_DATABASE"),
-        ssl=ssl_context
+        ssl=ssl_context 
     )
+
