@@ -1,13 +1,31 @@
 from fastapi import FastAPI
 from routes  import mesas_routes, test_db_routes, auth_routes, usuarios_routes, reservas_routes, menu_routes, platos_routes, menus_semanales_routes
 
-
+import os
 
 
 
 
 
 app = FastAPI()
+
+
+
+# 1. Recuperamos el contenido de la variable que pegaste en Railway
+ca_content = os.getenv("MYSQL_CA_CONTENT")
+
+# 2. Definimos dónde queremos que se guarde el archivo temporalmente
+# Usaremos '/app/aiven-ca.pem' que es una ruta segura en Railway
+ca_path = "/app/aiven-ca.pem"
+
+if ca_content:
+    with open(ca_path, "w") as f:
+        f.write(ca_content)
+    # 3. Actualizamos la variable de entorno para que el resto del código
+    # use esta nueva ruta de archivo que acabamos de crear
+    os.environ["MYSQL_CA_CERT"] = ca_path
+
+
 
 
 app.include_router(test_db_routes.router, prefix="/debug", tags=["debug"])
