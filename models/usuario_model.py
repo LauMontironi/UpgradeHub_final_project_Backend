@@ -4,21 +4,29 @@ from typing import Optional
 # 📥 Lo que el cliente envía para registrarse
 class UsuarioCreate(BaseModel):
     nombre: str
-    email: EmailStr   # valida formato de email automáticamente
+    apellido: str
+    email: EmailStr
     password: str
+    telefono: Optional[str] = None
+    edad: int
+    alergias: Optional[str] = None
     rol: Optional[str] = "cliente"
+
 
 
 # 📤 Lo que la API devuelve al frontend (sin contraseña)
 class UsuarioOut(BaseModel):
     id: int
     nombre: str
+    apellido: str
     email: EmailStr
+    telefono: Optional[str] = None
+    edad: int
+    alergias: Optional[str] = None
     rol: str
 
     class Config:
-        from_attributes = True  
-
+        from_attributes = True
 
 # 🔐 Para login
 class UsuarioLogin(BaseModel):

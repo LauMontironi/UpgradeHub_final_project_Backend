@@ -7,17 +7,22 @@ router = APIRouter()
 
 # 🔍 GET /usuarios/id
 
-async def get_user_id(user_id: int):
+async def get_user_id(usuario_id: int):
     try:
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
-            
             await cursor.execute(
-                "SELECT id, nombre, email, rol FROM usuarios WHERE id=%s",
-                (user_id,)
+                """
+                SELECT id, nombre, apellido, email, telefono, edad, alergias, rol
+                FROM usuarios
+                WHERE id = %s
+                """,
+                (usuario_id,)
             )
-            user = await cursor.fetchone()
+            user= await cursor.fetchone()
             return user
+
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:

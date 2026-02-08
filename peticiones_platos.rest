@@ -1,0 +1,6 @@
+@host = http://127.0.0.1
+@port = 8000
+
+### Ver todos los platos (público) -> botón "Ver nuestros platos"
+GET {{host}}:{{port}}/platos/platos
+

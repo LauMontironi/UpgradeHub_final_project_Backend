@@ -1,9 +1,7 @@
 @host = http://127.0.0.1
 @port = 8000
 
-###GET ALL MENUS     NO REQUIERE AUTENTICACION- LO PODEMOS VER SIN HACER LOGIN 
-
-GET {{host}}:{{port}}/menu
+###GET ALL MENUS( recordar esto se ve en menus_semanales9)
 
 
 ### ✅ GET menu por fecha (OK)
@@ -20,31 +18,31 @@ GET {{host}}:{{port}}/menu/2025-01-01
 ### ======================================================
 
 ### ➕ POST crear menú (ADMIN)
-POST {{host}}:{{port}}/menu/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIE1vbnRpcm9uaSIsInJvbCI6ImNsaWVudGUiLCJleHAiOjE3NzA0MDc3MDl9.Foz5wW1xsB4egXz7io6tXiu_o9QMBB004JgfXL6RpoI
+POST {{host}}:{{port}}/menu
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDUzNjIzMH0.bB3oRMwo6I0dJVql02JqqYTd1ibO1JY_VIDCPl8j0z0
 Content-Type: application/json
 
 {
-  "fecha": "2024-06-01",
-  "nombre": "Menú del Día: Pollo",
-  "descripcion": "Pollo al horno + guarnición + bebida",
-  "foto_url": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600",
-  "precio": 13.90
+  "fecha": "2026-02-20",
+  "nombre": "TEST - Menú semanal",
+  "descripcion": "Menú de prueba para comprobar POST/PUT/DELETE.",
+  "foto_url": "https://res.cloudinary.com/dej3mecyv/image/upload/v1770497579/Edamame_al_vapor_thqxap.jpg",
+  "precio": 19.90
 }
 
 ### ✏️ PUT actualizar menú (ADMIN)
-PUT {{host}}:{{port}}/menu/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIE1vbnRpcm9uaSIsInJvbCI6ImNsaWVudGUiLCJleHAiOjE3NzA0MDc3MDl9.Foz5wW1xsB4egXz7io6tXiu_o9QMBB004JgfXL6RpoI
+PUT {{host}}:{{port}}/menu/4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDUzNjIzMH0.bB3oRMwo6I0dJVql02JqqYTd1ibO1JY_VIDCPl8j0z0
 Content-Type: application/json
 
 {
-  "fecha": "2024-06-01",
-  "nombre": "Menú del Día: Pollo (Editado)",
+  "fecha": "2026-02-20",
+  "nombre": "TEST - Menú semanal (Editado)",
   "descripcion": "Pollo + guarnición + postre",
-  "foto_url": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600",
+  "foto_url": "https://res.cloudinary.com/dej3mecyv/image/upload/v1770497579/Edamame_al_vapor_thqxap.jpg",
   "precio": 14.50
 }
 
 ### 🗑 DELETE borrar menú (ADMIN)
-DELETE {{host}}:{{port}}/menu/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIE1vbnRpcm9uaSIsInJvbCI6ImNsaWVudGUiLCJleHAiOjE3NzA0MDc3MDl9.Foz5wW1xsB4egXz7io6tXiu_o9QMBB004JgfXL6RpoI
+DELETE {{host}}:{{port}}/menu/4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDUzNjIzMH0.bB3oRMwo6I0dJVql02JqqYTd1ibO1JY_VIDCPl8j0z0

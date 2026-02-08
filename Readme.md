@@ -1,6 +1,7 @@
-📘 Proyecto UpgradeFood — Documentación Backend (Paso a Paso)
+🍣 UpgradeFood — Documentación Backend Completa
 
-Este documento explica cómo se construyó el backend desde cero, las decisiones de arquitectura y los siguientes pasos de desarrollo.
+Este backend representa la operativa de un restaurante real:
+clientes que consultan menús y reservan, y un administrador que gestiona menús, mesas, carta y revisa actividad.
 
 1️⃣ Creación del entorno de trabajo:
 
@@ -38,7 +39,7 @@ Además:
 
 Proveedor elegido: MySQL en Aiven
 
-📐 Modelo Entidad-Relación
+📐 Modelo Entidad-Relación 🗄️ Base de datos
 
 El sistema se diseñó simple pero funcional.
 
@@ -48,20 +49,43 @@ El sistema se diseñó simple pero funcional.
 | -------- | ----------------------- | ------------- |
 | id       | PK                      | Identificador |
 | nombre   | VARCHAR                 | Nombre        |
+| apellido | VARCHAR                 | Apellido      |
 | email    | VARCHAR UNIQUE          | Login         |
-| password | VARCHAR                 | Contraseña    |
+| password | VARCHAR                 | Hash Argon2   |
+| telefono | VARCHAR                 | Teléfono      |
+| edad     | INT                     | Edad          |
+| alergias | TEXT                    | Alergias      |
 | rol      | ENUM('admin','cliente') | Permisos      |
 
-🍽 Tabla: menus ( las fotos guardamos url ahora mimso hay ejemplos sacdos de unsplash- guardamos url de imagenes en el backend para no guardar fotos en assets en el frontedn)
+📌 Existe un admin por defecto:
+admin@restaurante.com
+/ admin123 (hasheado)
+
+🍽 🍽 Tabla menus (menú por fecha) ( las fotos guardamos url de un book en cloudynary)
 
 | Campo       | Tipo        | Descripción     |
 | ----------- | ----------- | --------------- |
 | id          | PK          | Identificador   |
 | fecha       | DATE UNIQUE | Un menú por día |
-| nombre      | VARCHAR     | Nombre del menú |
+| nombre      | VARCHAR     | Nombre menú     |
 | descripcion | TEXT        | Detalles        |
-| foto_url    | VARCHAR     | URL imagen      |
+| foto_url    | VARCHAR     | Imagen          |
 | precio      | DECIMAL     | Precio          |
+
+🧩 Tabla platos (Carta del restaurante)
+
+| Campo            | Tipo    |
+| ---------------- | ------- |
+| id               | PK      |
+| categoria        | VARCHAR |
+| nombre           | VARCHAR |
+| descripcion      | TEXT    |
+| precio           | DECIMAL |
+| ingredientes     | TEXT    |
+| alergenos        | TEXT    |
+| info_nutricional | TEXT    |
+| imagen_url       | VARCHAR |
+| activo           | BOOLEAN |
 
 🪑 Tabla: mesas
 
@@ -71,16 +95,20 @@ El sistema se diseñó simple pero funcional.
 | numero_mesa | INT UNIQUE |
 | capacidad   | INT        |
 
-📅 Tabla: reservas
+📅 Tabla reservas
 
-| Campo         | Tipo                           |
-| ------------- | ------------------------------ |
-| id            | PK                             |
-| usuario_id    | FK → usuarios                  |
-| mesa_id       | FK → mesas                     |
-| fecha_reserva | DATE                           |
-| estado        | ENUM('confirmada','cancelada') |
-| resena        | TEXT                           |
+| Campo      | Tipo          |
+| ---------- | ------------- |
+| id         | PK            |
+| usuario_id | FK → usuarios |
+| mesa_id    | FK → mesas    |
+| fecha      | DATE          |
+| hora       | TIME          |
+| party_size | INT           |
+| estado     | ENUM          |
+| resena     | TEXT          |
+
+📌 Validación: una mesa no puede reservarse dos veces el mismo día.
 
 🛍 Tabla: pedidos ( hecha por si hacemos la seccion de pedidos a domicilio)
 
@@ -168,9 +196,7 @@ http://127.0.0.1:8000/debug/test-db
 
 🚀 SIGUIENTE PASO —
 
-🔐 7 AUTENTICACIÓN
-
-Vamos a dividir en AUTH y USUARIOS ( los modelos estan todos en usuario_model.py)
+📡 Rutas del Backend
 
 🔐 AUTH (registro y login)
 
@@ -181,13 +207,20 @@ Validación interna: antes de insertar, el backend hace SELECT ... WHERE email =
 
 Body:
 
+POST {{host}}:{{port}}/auth/register
+Content-Type: application/json
+
 {
-"nombre": "Juan",
-"email": "juan@email.com",
-"password": "123456"
+"nombre": "Laura",
+"apellido": "Montironi",
+"email": "laura@demo.com",
+"telefono": "+34 600 000 000",
+"edad": 25,
+"alergias": "Sésamo",
+"password": "Demo1234"
 }
 
-Response:==> FRONTED ( para que sepamos el tipo en el fronted despues ) TYPE<{register_response: RegisterResponse}>
+Response:==> FRONTED TYPE<{register_response: RegisterResponse}>
 
 TYPE : RegisterResponse = {
 msg: string;
@@ -195,20 +228,24 @@ item: IUsuario;
 };
 
 HTTP/1.1 201 Created
-date: Fri, 06 Feb 2026 13:38:27 GMT
+date: Sun, 08 Feb 2026 06:24:14 GMT
 server: uvicorn
-content-length: 126
+content-length: 199
 content-type: application/json
 connection: close
 
 {
 "msg": "usuario registrado correctamente",
 "item": {
-"id": 4,
-"nombre": "Laura Montironi",
+"id": 5,
+"nombre": "Laura",
+"apellido": "Montironi",
 "email": "laura@demo.com",
+"telefono": "+34 600 000 000",
+"edad": 25,
+"alergias": "Sésamo",
 "rol": "cliente"
-}
+
 }
 
 🔑 POST /auth/login
@@ -218,30 +255,34 @@ Descripción: Login usuario
 Body:
 
 {
-"email": "juan@email.com",
-"password": "123456"
+"email": "laura@demo.com",
+"password": "Demo1234"
 }
 
-Response: ==> FRONTED ( para que sepamos el tipo en el fronted despues ) type LoginResponse = {
+Response: ==> FRONTED type LoginResponse = {
 message: string;
 token: string;
 user:IUsuario;
 };
 
 HTTP/1.1 200 OK
-date: Fri, 06 Feb 2026 14:02:53 GMT
+date: Sun, 08 Feb 2026 06:25:19 GMT
 server: uvicorn
-content-length: 324
+content-length: 384
 content-type: application/json
 connection: close
 
 {
 "msg": "Login correcto",
-"Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIE1vbnRpcm9uaSIsInJvbCI6ImNsaWVudGUiLCJleHAiOjE3NzAzOTAxNzZ9.HGC14Su2dFM_Pa56FYU4-qx_VuUqwgwFDNnsgxagrbQ",
+"Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIiwicm9sIjoiY2xpZW50ZSIsImV4cCI6MTc3MDUzNTUyMX0.Er1xCu9HD8-R25OTYw_w0C3b7J8XqBSzSkhcWiEbVF4",
 "user": {
-"id": 4,
-"nombre": "Laura Montironi",
+"id": 5,
+"nombre": "Laura",
+"apellido": "Montironi",
 "email": "laura@demo.com",
+"telefono": "+34 600 000 000",
+"edad": 25,
+"alergias": "Sésamo",
 "rol": "cliente"
 }
 }
@@ -261,125 +302,101 @@ connection: close
 
 👤 USUARIOS (requiere token)
 
-🔍 GET /usuarios/{id} ✅ DONE
+🔍 GET /usuarios/{id} (token requerido)
 
-Devuelve datos del usuario logueado frontend type == ? es neceario ?
+Admin puede ver cualquiera / Cliente solo su propio id
 
-HTTP/1.1 200 OK
-date: Fri, 06 Feb 2026 14:52:52 GMT
-server: uvicorn
-content-length: 76
-content-type: application/json
-connection: close
+Devuelve datos del usuario logueado
 
-{
-"id": 4,
-"nombre": "Laura Montironi",
-"email": "laura@demo.com",
-"rol": "cliente"
+🍽 MENÚS (públicos por fecha )
+
+| Método | Ruta             |              |
+| ------ | ---------------- | ------------ |
+| GET    | `/menus`         | Lista menús  |
+| GET    | `/menus/{fecha}` | Menú por día |
+
+Frontend type:
+type IMenu = {
+id:number;
+fecha:string;
+nombre:string;
+descripcion:string;
+foto_url:string;
+precio:number;
 }
 
-🍽 MENÚS (públicos)
-🔍 GET /menu/ ✅ DONE (all)
+Admin
 
-Devuelve array de objetos.
-Frontend type: IMenu[] que tendra que tener en nuestra interfaz id, fecha, nombre, descripcion, foto_url, precio
+| Método | Ruta          |
+| ------ | ------------- |
+| POST   | `/menus`      |
+| PUT    | `/menus/{id}` |
+| DELETE | `/menus/{id}` |
 
-HTTP/1.1 200 OK
-date: Fri, 06 Feb 2026 15:03:06 GMT
-server: uvicorn
-content-length: 736
-content-type: application/json
-connection: close
+🍣 PLATOS ( carta digital)
 
-ejemplo de respuesta :
+| Método | Ruta                               |
+| ------ | ---------------------------------- |
+| GET    | `/platos/platos`                   |
+| GET    | `/platos/platos/{id}`              |
+| GET    | `/platos/platos?categoria=sashimi` |
+| POST   | `/platos` (admin)                  |
+| PUT    | `/platos/{id}` (admin)             |
+| DELETE | `/platos/{id}` (admin)             |
 
-{
-"id": 1,
-"fecha": "2024-05-22",
-"nombre": "Menú del Día: Pasta",
-"descripcion": "Espaguetis al pesto, ensalada caprese y bebida.",
-"foto_url": "https://images.unsplash.com/photo-1473093226795-af9932fe5856?auto=format&fit=crop&w=600",
-"precio": 12.5
-},
+🪑 MESAS
 
-🔍 GET /menu/{fecha} ✅ DONE (por fecha)
+| Método | Ruta          | Acceso  |
+| ------ | ------------- | ------- |
+| GET    | `/mesas`      | Público |
+| POST   | `/mesas`      | Admin   |
+| PUT    | `/mesas/{id}` | Admin   |
+| DELETE | `/mesas/{id}` | Admin   |
 
-response :
+📅 RESERVAS
 
-HTTP/1.1 200 OK
-date: Fri, 06 Feb 2026 15:40:33 GMT
-server: uvicorn
-content-length: 265
-content-type: application/json
-connection: close
+cliente
+| Método | Ruta |
+| ------ | ------------------------- |
+| POST | `/reservas` |
+| GET | `/reservas/me` |
+| PUT | `/reservas/{id}/cancelar` |
+| PUT | `/reservas/{id}/resena` |
 
-{
-"success": true,
-"menu": {
-"id": 1,
-"fecha": "2024-05-22",
-"nombre": "Menú del Día: Pasta",
-"descripcion": "Espaguetis al pesto, ensalada caprese y bebida.",
-"foto_url": "https://images.unsplash.com/photo-1473093226795-af9932fe5856?auto=format&fit=crop&w=600",
-"precio": 12.5
-}
-}
+Admin
 
-🔒 ADMIN — CRUD MENÚS
+| Método | Ruta                          |
+| ------ | ----------------------------- |
+| GET    | `/reservas`                   |
+| GET    | `/reservas?with_reviews=true` |
 
-| Método | Ruta               | Descripción   |
-| ------ | ------------------ | ------------- |
-| POST   | `/menus`           | Crear menú    |
-| PUT    | `/menus/{menu_id}` | Editar menú   |
-| DELETE | `/menus/{menu_id}` | Eliminar menú |
+🧩 Cómo funciona el sistema para el usuario
 
-Validación obligatoria:
-✔ Solo admin
-✔ Fecha no duplicada (control BD + validación)
+Cliente entra → ve carta o menús
+Si quiere reservar → login
+Reserva → asociada a su cuenta
+Después puede dejar reseña
 
-(Opcional)
-POST /menus/{menu_id}/duplicate
+Admin entra → gestiona carta, menús y mesas → revisa actividad
 
-🪑 11. MESAS
+🧪 Estado actual del backend
 
-| Método | Ruta               | Acceso  |
-| ------ | ------------------ | ------- |
-| GET    | `/mesas`           | Público |
-| POST   | `/mesas`           | Admin   |
-| PUT    | `/mesas/{mesa_id}` | Admin   |
-| DELETE | `/mesas/{mesa_id}` | Admin   |
+✅ Entorno configurado
+✅ MySQL Aiven conectado
+✅ JWT Auth funcionando
+✅ Carta (platos)
+✅ Menús por fecha
+✅ Mesas
+✅ Reservas
 
-📅 12. RESERVAS
-🔒 Cliente
+Rutas para e frontend indispensables :
 
-| Método | Ruta                      | Descripción      |
-| ------ | ------------------------- | ---------------- |
-| POST   | `/reservas`               | Crear reserva    |
-| GET    | `/reservas/me`            | Ver MIS reservas |
-| PUT    | `/reservas/{id}/cancelar` | Cancelar reserva |
-| PUT    | `/reservas/{id}/resena`   | Escribir reseña  |
-
-Validaciones backend obligatorias:
-✔ Mesa disponible en esa fecha
-✔ Solo dueño puede cancelar o reseñar
-✔ Solo si estado = confirmada
-
-👑 Admin
-
-| Método | Ruta                          | Descripción          |
-| ------ | ----------------------------- | -------------------- |
-| GET    | `/reservas`                   | Ver TODAS            |
-| GET    | `/reservas?with_reviews=true` | Ver solo con reseñas |
-
-✅ ESTADO ACTUAL DEL PROYECTO
-
-✔ Entorno configurado
-✔ Conexión MySQL (Aiven)
-✔ Modelo de datos definido
-✔ Test DB funcionando
-✔ Auth (register/login)
-✔ GET usuario
-✔ GET menús
-
-🟡 Falta chequear que esten todas las rutas y peticiones uqe necesitamos y verificar que funcionen en request, por ejenpki admin es Admin Principal admin#restaurante,com ckave admin 123 y este deberia poder hacr post put delete de menu pero laura clienta no .
+✅ POST /auth/register
+✅ POST /auth/login
+✅ GET /menus (listar) => boton ver menú
+✅ GET /menus/{fecha} (por fecha)
+✅ POST /menus (admin)
+✅ PUT /menus/{id} (admin)
+✅ DELETE /menus/{id} (admin)
+✅ GET /platos/platos (carta) => boton ver platos
+✅ GET /platos/platos/{id} (ficha)
