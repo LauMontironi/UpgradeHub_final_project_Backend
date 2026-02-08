@@ -4,11 +4,11 @@
 
 ###🔍 GET /usuarios/id // para probarla primerohay que loguearse y obtener el token 
 
-GET {{host}}:{{port}}/usuarios/4
+GET {{host}}:{{port}}/usuarios/5
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIE1vbnRpcm9uaSIsInJvbCI6ImNsaWVudGUiLCJleHAiOjE3NzAzOTMxMzd9.wzcmttk7UtoN0ZiKz9aGh7OLMEXCMy0Z-_3eQG1a-eY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIiwicm9sIjoiY2xpZW50ZSIsImV4cCI6MTc3MDUzNTUyMX0.Er1xCu9HD8-R25OTYw_w0C3b7J8XqBSzSkhcWiEbVF4
 
 
 ### (prueba con otro id)
-GET {{host}}:{{port}}/usuarios/2
-Authorization: Bearer {{token}}
+GET {{host}}:{{port}}/usuarios/4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIiwicm9sIjoiY2xpZW50ZSIsImV4cCI6MTc3MDUzNTUyMX0.Er1xCu9HD8-R25OTYw_w0C3b7J8XqBSzSkhcWiEbVF4

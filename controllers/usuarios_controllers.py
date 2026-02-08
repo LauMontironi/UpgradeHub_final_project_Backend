@@ -7,7 +7,7 @@ router = APIRouter()
 
 # 🔍 GET /usuarios/id
 
-async def get_user_by_id(usuario_id: int):
+async def get_user_id(usuario_id: int):
     try:
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
