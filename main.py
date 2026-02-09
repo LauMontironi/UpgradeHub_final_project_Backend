@@ -1,11 +1,8 @@
 from fastapi import FastAPI
 from routes  import mesas_routes, test_db_routes, auth_routes, usuarios_routes, reservas_routes, menu_routes, platos_routes, menus_semanales_routes
+from fastapi.middleware.cors import CORSMiddleware
 
 import os
-
-
-
-
 
 app = FastAPI()
 
@@ -24,6 +21,26 @@ if ca_content:
     # 3. Actualizamos la variable de entorno para que el resto del código
     # use esta nueva ruta de archivo que acabamos de crear
     os.environ["MYSQL_CA_CERT"] = ca_path
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
+    
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+
+
+
+
+
 
 
 
