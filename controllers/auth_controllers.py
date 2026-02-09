@@ -49,7 +49,7 @@ async def register(usuario: UsuarioCreate):
             await cursor.execute(
                 """
                 INSERT INTO usuarios (nombre, apellido, dni, email, telefono, edad, alergias, password, rol)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s. %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 (
                     usuario.nombre,
