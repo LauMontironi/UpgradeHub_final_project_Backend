@@ -56,6 +56,7 @@ El sistema se diseñó simple pero funcional.
 | edad     | INT                     | Edad          |
 | alergias | TEXT                    | Alergias      |
 | rol      | ENUM('admin','cliente') | Permisos      |
+| DNI      | varchar                 | Permisos      |
 
 📌 Existe un admin por defecto:
 admin@restaurante.com

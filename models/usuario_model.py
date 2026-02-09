@@ -5,6 +5,7 @@ from typing import Optional
 class UsuarioCreate(BaseModel):
     nombre: str
     apellido: str
+    dni: str
     email: EmailStr
     password: str
     telefono: Optional[str] = None
@@ -19,6 +20,7 @@ class UsuarioOut(BaseModel):
     id: int
     nombre: str
     apellido: str
+    dni: str
     email: EmailStr
     telefono: Optional[str] = None
     edad: int

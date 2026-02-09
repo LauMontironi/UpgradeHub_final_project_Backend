@@ -13,7 +13,7 @@ async def get_user_by_id(usuario_id: int):
         async with conn.cursor(aio.DictCursor) as cursor:
             await cursor.execute(
                 """
-                SELECT id, nombre, apellido, email, telefono, edad, alergias, rol
+                SELECT id, nombre, apellido, dni, email, telefono, edad, alergias, rol
                 FROM usuarios
                 WHERE id = %s
                 """,
@@ -48,12 +48,13 @@ async def register(usuario: UsuarioCreate):
 
             await cursor.execute(
                 """
-                INSERT INTO usuarios (nombre, apellido, email, telefono, edad, alergias, password, rol)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO usuarios (nombre, apellido, dni, email, telefono, edad, alergias, password, rol)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s. %s)
                 """,
                 (
                     usuario.nombre,
                     usuario.apellido,
+                    usuario.dni,
                     usuario.email,
                     usuario.telefono,
                     usuario.edad,

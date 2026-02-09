@@ -16,16 +16,9 @@ async def get_platos():
                         ORDER BY categoria, nombre
                     """)
             platos = await cursor.fetchall()
-
+            return platos
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
             conn.close()
 
-            columnas = [
-        "id", "categoria", "nombre", "descripcion", "precio",
-        "ingredientes", "alergenos", "info_nutricional",
-        "imagen_url", "activo"
-    ]
-
-    return [dict(zip(columnas, plato)) for plato in platos]
