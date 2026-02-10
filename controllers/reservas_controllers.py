@@ -3,120 +3,132 @@ import aiomysql as aio
 from db.config import get_conexion
 from models.reserva_model import ReservaCreate, ReservaReview
 
-async def create_reserva(reserva:ReservaCreate, user):
-   
+async def create_reserva(reserva: ReservaCreate, user):
+    conn = None
     try:
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
-            # 🚫 validar que no exista reserva confirmada para esa mesa y esa fecha
+            # 1. Validar disponibilidad (Misma mesa, misma fecha, misma hora)
             await cursor.execute(
                 """
-                SELECT id FROM reservas
-                WHERE mesa_id=%s AND fecha_reserva=%s AND estado='confirmada'
+                SELECT id FROM reservas 
+                WHERE mesa_id=%s AND fecha=%s AND hora=%s AND estado='confirmada'
                 """,
-                (reserva.mesa_id, reserva.fecha_reserva)
+                (reserva.mesa_id, reserva.fecha, reserva.hora)
             )
             existing = await cursor.fetchone()
             if existing:
-                raise HTTPException(status_code=400, detail="Esa mesa ya está reservada para esa fecha")
+                raise HTTPException(status_code=400, detail="Esa mesa ya está reservada para esa fecha y hora")
 
+            # 2. Insertar con todas las columnas
             await cursor.execute(
                 """
-                INSERT INTO reservas (usuario_id, mesa_id, fecha_reserva, estado, resena)
-                VALUES (%s, %s, %s, 'confirmada', NULL)
+                INSERT INTO reservas (usuario_id, mesa_id, fecha, hora, party_size, estado, resena)
+                VALUES (%s, %s, %s, %s, %s, 'confirmada', %s)
                 """,
-                (user["id"], reserva.mesa_id, reserva.fecha_reserva)
+                (user["id"], reserva.mesa_id, reserva.fecha, reserva.hora, reserva.party_size, reserva.resena)
             )
             await conn.commit()
             new_id = cursor.lastrowid
 
+            # 3. Recuperar la reserva creada
             await cursor.execute("SELECT * FROM reservas WHERE id=%s", (new_id,))
             item = await cursor.fetchone()
 
         return {"msg": "reserva creada correctamente", "item": item}
 
-
+    except HTTPException as he:
+        raise he
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
-    
+        if conn:
             conn.close()
 
 async def get_my_reservas(user):
+    conn = None
     try:
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
             await cursor.execute(
-                "SELECT * FROM reservas WHERE usuario_id=%s ORDER BY fecha_reserva DESC",
+                "SELECT * FROM reservas WHERE usuario_id=%s ORDER BY fecha DESC, hora DESC",
                 (user["id"],)
             )
             return await cursor.fetchall()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
+        if conn:
             conn.close()
 
-async def cancel_reserva(reserva_id: int, user):
-    
+async def delete_reserva(reserva_id: int, user):
+    conn = None
     try:
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
-            # asegurar que la reserva sea del usuario
-            await cursor.execute("SELECT * FROM reservas WHERE id=%s", (reserva_id,))
+            # Primero verificar si la reserva existe
+            await cursor.execute("SELECT usuario_id FROM reservas WHERE id=%s", (reserva_id,))
             reserva = await cursor.fetchone()
+            
             if not reserva:
                 raise HTTPException(status_code=404, detail="Reserva no encontrada")
 
+            # Solo el dueño de la reserva o un administrador pueden borrarla
             if reserva["usuario_id"] != user["id"] and user["rol"] != "admin":
-                raise HTTPException(status_code=403, detail="No tienes permisos para cancelar esta reserva")
+                raise HTTPException(status_code=403, detail="No tienes permisos para eliminar esta reserva")
 
-            await cursor.execute(
-                "UPDATE reservas SET estado='cancelada' WHERE id=%s",
-                (reserva_id,)
-            )
+            # Ejecutar el borrado real en la base de datos
+            await cursor.execute("DELETE FROM reservas WHERE id=%s", (reserva_id,))
             await conn.commit()
 
-        return {"msg": "reserva cancelada correctamente"}
-
+        return {"msg": "Reserva eliminada definitivamente de la base de datos"}
+    
+    except HTTPException as he:
+        raise he
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
-    
+        if conn:
             conn.close()
 
-async def add_review(reserva_id: int, reserva:ReservaReview, user):
-
+async def add_review(reserva_id: int, reserva_review: ReservaReview, user):
+    conn = None
     try:
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
             await cursor.execute("SELECT * FROM reservas WHERE id=%s", (reserva_id,))
             reserva = await cursor.fetchone()
+            
             if not reserva:
                 raise HTTPException(status_code=404, detail="Reserva no encontrada")
 
             if reserva["usuario_id"] != user["id"]:
-                raise HTTPException(status_code=403, detail="Solo el dueño de la reserva puede dejar reseña")
+                raise HTTPException(status_code=403, detail="Solo el dueño puede dejar reseña")
 
             await cursor.execute(
                 "UPDATE reservas SET resena=%s WHERE id=%s",
-                (reserva.resena, reserva_id)
+                (reserva_review.resena, reserva_id)
             )
             await conn.commit()
 
         return {"msg": "reseña guardada correctamente"}
-
+    except HTTPException as he:
+        raise he
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
+        if conn:
             conn.close()
 
 async def get_all_reservas():
+    conn = None
     try:
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
-            await cursor.execute("SELECT * FROM reservas ORDER BY fecha_reserva DESC")
+            await cursor.execute("SELECT * FROM reservas ORDER BY fecha DESC, hora DESC")
             return await cursor.fetchall()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
+        if conn:
             conn.close()

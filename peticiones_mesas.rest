@@ -1,0 +1,41 @@
+### Variables de entorno
+@host = http://127.0.0.1
+@port = 8000
+
+
+### 1. OBTENER TODAS LAS MESAS (Público o Cliente)
+# No requiere token según tu código
+GET {{host}}:{{port}}/mesas
+Content-Type: application/json
+
+###
+
+### 2. CREAR UNA MESA NUEVA (Solo Admin)
+POST {{host}}:{{port}}/mesas
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDcxMTI2Nn0.JFvPMT-KlxmA8ZN8S9kkTQ3F-B3GAFjlxnR_w9flIIs
+
+{
+    "numero_mesa": 10,
+    "capacidad": 4
+}
+
+###
+
+### 3. ACTUALIZAR UNA MESA (Solo Admin)
+# Cambia el ID (al final de la URL) por uno que exista
+PUT {{host}}:{{port}}/mesas/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDcxMTI2Nn0.JFvPMT-KlxmA8ZN8S9kkTQ3F-B3GAFjlxnR_w9flIIs
+
+{
+    "numero_mesa": 1,
+    "capacidad": 6
+}
+
+###
+
+### 4. ELIMINAR UNA MESA (Solo Admin)
+# Cambia el ID por el de la mesa que quieras borrar
+DELETE {{host}}:{{port}}/mesas/10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDcxMTI2Nn0.JFvPMT-KlxmA8ZN8S9kkTQ3F-B3GAFjlxnR_w9flIIs

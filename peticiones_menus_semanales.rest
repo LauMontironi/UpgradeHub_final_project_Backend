@@ -9,3 +9,45 @@ GET {{host}}:{{port}}/menus-semanales
 ###Ver un menú completo con sus 3 platos: ( esto sera en cada uno cuando se clique) 
 ###
 GET {{host}}:{{port}}/menus-semanales/1
+
+
+BUSCAR MENÚ POR FECHA (Para el filtro de la Home)
+GET {{host}}:{{port}}/menus-semanales/fecha/2026-02-15
+Content-Type: application/json
+
+###
+
+### 4. CREAR NUEVO MENÚ SEMANAL (Solo Admin - Dashboard)
+POST {{host}}:{{port}}/menus-semanales
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "numero": 5,
+    "titulo": "Menú Especial San Valentín",
+    "descripcion": "Una selección romántica de nuestros mejores platos",
+    "precio": 35.00,
+    "activo": true,
+    "fecha": "2026-02-14"
+}
+
+###
+
+### 5. ACTUALIZAR UN MENÚ (Solo Admin - Dashboard)
+PUT {{host}}:{{port}}/menus-semanales/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "titulo": "Menú Ejecutivo Actualizado",
+    "descripcion": "Cambiamos el postre por algo más fresco",
+    "precio": 18.50,
+    "activo": true,
+    "fecha": "2026-02-20"
+}
+
+###
+
+### 6. ELIMINAR UN MENÚ (Solo Admin - Dashboard)
+DELETE {{host}}:{{port}}/menus-semanales/5
+Authorization: Bearer {{token}}
