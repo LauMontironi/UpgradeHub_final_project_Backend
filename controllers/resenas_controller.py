@@ -38,7 +38,8 @@ async def get_all_resenas():
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
             await cursor.execute("SELECT r.*, u.nombre FROM resenas r JOIN usuarios u ON r.usuario_id = u.id ORDER BY r.fecha DESC")
-            return await cursor.fetchall()
+            resenas = await cursor.fetchall()
+            return resenas
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
