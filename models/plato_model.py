@@ -22,3 +22,13 @@ class PlatoUpdate(BaseModel):
     info_nutricional: Optional[str] = None
     imagen_url: Optional[str] = None
     activo: Optional[bool] = None
+
+class PlatoBase(BaseModel):
+    categoria: str
+    nombre: str
+    descripcion: str
+    precio: float
+    ingredientes: Optional[str] = None
+    alergenos: Optional[str] = None
+    info_nutricional: Optional[str] = None
+    imagen_url: Optional[str] = None

@@ -40,4 +40,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiO
 
 ### 5. VER TODAS LAS RESERVAS (Solo Admin)
 GET {{host}}:{{port}}/reservas
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJsYXVyYUBkZW1vLmNvbSIsIm5vbWJyZSI6IkxhdXJhIiwicm9sIjoiY2xpZW50ZSIsImV4cCI6MTc3MDcxMDI3NX0.9HcgYEns-VrtFDm8RN-AqofQEitGMI0_w5YVhlK504A
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDgwODIxNX0.9O0mWj__-Ac_Ai1ZL_VV21VjeVEHkP_cv3Wczitej3g

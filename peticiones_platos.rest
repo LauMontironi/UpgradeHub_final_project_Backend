@@ -4,3 +4,37 @@
 ### Ver todos los platos (público) -> botón "Ver nuestros platos"
 GET {{host}}:{{port}}/platos/platos
 
+### CREAR UN PLATO (ADMIN) 
+POST {{host}}:{{port}}/platos
+Content-Type: application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDgxMDgzNH0.B0r-JlUOe-2iR_vXHRL0-dROqTGFy_t8EOIcb-Yx6Zs
+
+{
+  "categoria": "nigiri",
+  "nombre": "Nigiri de Salmón Premium",
+  "descripcion": "Salmón noruego con un toque de lima y sal negra",
+  "precio": 4.50,
+  "ingredientes": "Arroz, salmón, lima, sal negra",
+  "alergenos": "Pescado",
+  "info_nutricional": "120 kcal por pieza",
+  "imagen_url": "https://res.cloudinary.com/tu_usuario/image/upload/v1/salmon.jpg"
+}
+
+### ACTUALIZAR UN PLATO (ADMIN) 
+PUT  {{host}}:{{port}}/platos/33
+Content-Type: application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDgxMDgzNH0.B0r-JlUOe-2iR_vXHRL0-dROqTGFy_t8EOIcb-Yx6Zs
+
+{
+  "categoria": "nigiri",
+  "nombre": "Actualizado: Ahora con aceite de trufa blanca",
+  "descripcion": "Salmón noruego con un toque de lima y sal negra",
+  "precio": 4.50,
+  "ingredientes": "Arroz, salmón, lima, sal negra",
+  "alergenos": "Pescado",
+  "info_nutricional": "130 kcal por pieza",
+  "imagen_url": "https://res.cloudinary.com/tu_usuario/image/upload/v1/salmon.jpg"
+}
+
+### ELIMINAR UN PLATO (ADMIN) 
+DELETE {{host}}:{{port}}/platos/33
