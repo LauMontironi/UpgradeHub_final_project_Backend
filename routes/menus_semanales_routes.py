@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from controllers import menus_semanales_controller
 from core.dependences import is_admin, get_current_user
 from models.menu_semanal_model import MenuSemanalCreate, MenuSemanalUpdate
@@ -40,7 +40,23 @@ async def delete_menu_semanal(menu_id: str, admin=Depends(is_admin)):
 
 
 # ASIGNAR PLATO A MENÚ (Solo Admin)
-@router.post("/{menu_id}/platos/{plato_id}", status_code=201)
-async def asignar_plato(menu_id: str, plato_id: str, rol: str, admin=Depends(is_admin)):
-    # El 'rol' lo recibimos por query parameter (ej: ?rol=entrante)
-    return await menus_semanales_controller.asignar_plato_a_menu(int(menu_id), int(plato_id), rol)
+# En menus_semanales_routes.py
+
+# ASIGNAR PLATO A MENÚ (Admin)
+@router.post("/vincular-plato", status_code=201)
+async def asignar_plato(datos: dict, admin=Depends(is_admin)):
+    # Sacamos los datos del objeto que manda el Service de Angular
+    menu_id = datos.get("menu_id")
+    plato_id = datos.get("plato_id")
+    rol = datos.get("rol")
+    
+    # Validamos que no falte nada antes de llamar al controlador
+    if menu_id is None or plato_id is None or rol is None:
+        raise HTTPException(status_code=400, detail="Faltan datos: menu_id, plato_id o rol")
+
+    # Llamamos a tu controlador convirtiendo a int (como pide el profe)
+    return await menus_semanales_controller.asignar_plato_a_menu(
+        int(menu_id), 
+        int(plato_id), 
+        rol
+    )

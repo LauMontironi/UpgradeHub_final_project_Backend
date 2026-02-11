@@ -147,7 +147,7 @@ async def asignar_plato_a_menu(menu_id: int, plato_id: int, rol: str):
     try:
         conn = await get_conexion()
         async with conn.cursor() as cursor:
-            # Insertamos en la tabla puente
+            # Insertamos en la tabla puente (menu_semanal_platos)
             await cursor.execute(
                 """
                 INSERT INTO menu_semanal_platos (menu_id, plato_id, rol)
@@ -158,6 +158,7 @@ async def asignar_plato_a_menu(menu_id: int, plato_id: int, rol: str):
             await conn.commit()
             return {"msg": f"Plato asignado como {rol} correctamente"}
     except Exception as e:
+        # Si el plato ya estaba asignado o hay error de base de datos, saltará aquí
         raise HTTPException(status_code=500, detail=f"Error al asignar plato: {str(e)}")
     finally:
         if conn:
