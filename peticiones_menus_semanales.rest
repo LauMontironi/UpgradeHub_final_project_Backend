@@ -4,14 +4,14 @@
 
 ### ver listado de menues: ( esto sera en el boton ver menu) 
 
-GET {{host}}:{{port}}/menus-semanales
+GET {{host}}:{{port}}/menus-semanales/
 
 ###Ver un menú completo con sus 3 platos: ( esto sera en cada uno cuando se clique) 
 ###
 GET {{host}}:{{port}}/menus-semanales/1
 
 
-BUSCAR MENÚ POR FECHA (Para el filtro de la Home)
+### BUSCAR MENÚ POR FECHA (Para el filtro de la Home)
 GET {{host}}:{{port}}/menus-semanales/fecha/2026-02-15
 Content-Type: application/json
 
@@ -20,23 +20,24 @@ Content-Type: application/json
 ### 4. CREAR NUEVO MENÚ SEMANAL (Solo Admin - Dashboard)
 POST {{host}}:{{port}}/menus-semanales
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDcxNDU3M30.A-wJ-qtbiuRFok3H_HwemF9sebFpWTGGv22nkam6gA8
 
 {
-    "numero": 5,
+    "numero": 8,
     "titulo": "Menú Especial San Valentín",
     "descripcion": "Una selección romántica de nuestros mejores platos",
     "precio": 35.00,
     "activo": true,
-    "fecha": "2026-02-14"
+    "fecha": "2026-02-14",
+    "foto_url": ""
 }
 
 ###
 
 ### 5. ACTUALIZAR UN MENÚ (Solo Admin - Dashboard)
-PUT {{host}}:{{port}}/menus-semanales/1
+PUT {{host}}:{{port}}/menus-semanales/10
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDcxNDg4Mn0.bnCPww2pBosQuUvBs7VrmeHGwNlDpz-z6GCzqOV7Zng
 
 {
     "titulo": "Menú Ejecutivo Actualizado",
@@ -49,5 +50,11 @@ Authorization: Bearer {{token}}
 ###
 
 ### 6. ELIMINAR UN MENÚ (Solo Admin - Dashboard)
-DELETE {{host}}:{{port}}/menus-semanales/5
-Authorization: Bearer {{token}}
+DELETE {{host}}:{{port}}/menus-semanales/10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDcxNDg4Mn0.bnCPww2pBosQuUvBs7VrmeHGwNlDpz-z6GCzqOV7Zng
+
+
+
+### Asignar un plato a un menú
+POST {{host}}:{{port}}/menus-semanales/5/platos/10?rol=postre
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDcxNTU3N30.iH5c2FqH_-EWSTL6l5vPa3iusaXZcgkLfarShtDlfVg

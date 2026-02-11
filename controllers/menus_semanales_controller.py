@@ -75,15 +75,33 @@ async def create_menu_semanal(menu: MenuSemanalCreate):
     try:
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
+            # Usamos ON DUPLICATE KEY UPDATE para que si el 'numero' ya existe, actualice los datos
+            # en lugar de lanzar el error de IntegrityError.
             await cursor.execute(
-                """INSERT INTO menus_semanales (numero, titulo, descripcion, precio, activo, fecha) 
-                VALUES (%s, %s, %s, %s, %s, %s)""",
+                """
+                INSERT INTO menus_semanales (numero, titulo, descripcion, precio, activo, fecha) 
+                VALUES (%s, %s, %s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE 
+                    titulo = VALUES(titulo),
+                    descripcion = VALUES(descripcion),
+                    precio = VALUES(precio),
+                    activo = VALUES(activo),
+                    fecha = VALUES(fecha)
+                """,
                 (menu.numero, menu.titulo, menu.descripcion, menu.precio, menu.activo, menu.fecha)
             )
             await conn.commit()
-            return {"msg": "Menú creado correctamente", "id": cursor.lastrowid}
+            
+            # Si se actualizó, el lastrowid puede no ser el nuevo, así que devolvemos un mensaje informativo
+            return {
+                "msg": "Menú procesado correctamente (creado o actualizado)", 
+                "id": cursor.lastrowid if cursor.lastrowid != 0 else "existente"
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en el servidor: {str(e)}")
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 # Para la Home: obtener el menú de una fecha específica
 async def get_menu_by_fecha(fecha: str):
