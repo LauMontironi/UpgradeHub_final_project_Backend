@@ -44,3 +44,14 @@ async def get_all_resenas():
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
         conn.close()
+
+async def get_resenas_por_usuario(usuario_id: int):
+    try:
+        conn = await get_conexion()
+        async with conn.cursor(aio.DictCursor) as cursor:
+            await cursor.execute("SELECT * FROM resenas WHERE usuario_id = %s ORDER BY fecha DESC", (usuario_id,))
+            return await cursor.fetchall()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+    finally:
+        conn.close()
