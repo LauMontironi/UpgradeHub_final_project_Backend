@@ -60,3 +60,10 @@ async def asignar_plato(datos: dict, admin=Depends(is_admin)):
         int(plato_id), 
         rol
     )
+
+@router.delete("/desvincular-plato/{menu_id}/{plato_id}", status_code=200)
+async def desvincular(menu_id: str, plato_id: str, admin=Depends(is_admin)):
+    return await menus_semanales_controller.quitar_plato_de_menu(
+        int(menu_id), 
+        int(plato_id)
+    )

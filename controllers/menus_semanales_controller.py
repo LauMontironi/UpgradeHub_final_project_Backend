@@ -219,3 +219,19 @@ async def asignar_plato_a_menu(menu_id: int, plato_id: int, rol: str):
 #     finally:
 #         if conn:
 #             conn.close()
+
+async def quitar_plato_de_menu(menu_id: int, plato_id: int):
+
+    try:
+        conn = await get_conexion()
+        async with conn.cursor() as cursor:
+            await cursor.execute(
+                "DELETE FROM menu_semanal_platos WHERE menu_id = %s AND plato_id = %s",
+                (menu_id, plato_id)
+            )
+            await conn.commit()
+            return {"msg": "Plato eliminado del menú"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn: conn.close()
