@@ -71,40 +71,65 @@ async def get_menu_semanal(menu_id: int):
             conn.close()
 
 
+# async def create_menu_semanal(menu: MenuSemanalCreate):
+#     conn = await get_conexion()
+#     try:
+#         async with conn.cursor(aio.DictCursor) as cursor:
+#             # 1. Insertamos con un número provisional (usamos 0 o el que venga)
+#             # Mantenemos el campo 'numero' para que la DB no proteste
+#             await cursor.execute(
+#                 """
+#                 INSERT INTO menus_semanales (numero, titulo, descripcion, precio, activo, fecha) 
+#                 VALUES (%s, %s, %s, %s, %s, %s)
+#                 """,
+#                 (0, menu.titulo, menu.descripcion, menu.precio, menu.activo, menu.fecha)
+#             )
+            
+#             # 2. Obtenemos el ID que la base de datos acaba de generar
+#             new_id = cursor.lastrowid
+
+#             # 3. Actualizamos el 'numero' para que sea igual al ID
+#             await cursor.execute(
+#                 "UPDATE menus_semanales SET numero = %s WHERE id = %s",
+#                 (new_id, new_id)
+#             )
+            
+#             await conn.commit()
+            
+#             return {
+#                 "msg": "Menú creado con éxito", 
+#                 "id": new_id
+#             }
+#     except Exception as e:
+#         await conn.rollback()
+#         raise HTTPException(status_code=500, detail=f"Error DB: {str(e)}")
+#     finally:
+#         conn.close()
+
 async def create_menu_semanal(menu: MenuSemanalCreate):
-    conn = await get_conexion()
     try:
+        conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
-            # 1. Insertamos con un número provisional (usamos 0 o el que venga)
-            # Mantenemos el campo 'numero' para que la DB no proteste
+            # Volvemos al INSERT simple que usa el menu.numero que tú escribes
             await cursor.execute(
                 """
                 INSERT INTO menus_semanales (numero, titulo, descripcion, precio, activo, fecha) 
                 VALUES (%s, %s, %s, %s, %s, %s)
                 """,
-                (0, menu.titulo, menu.descripcion, menu.precio, menu.activo, menu.fecha)
+                (menu.numero, menu.titulo, menu.descripcion, menu.precio, menu.activo, menu.fecha)
             )
-            
-            # 2. Obtenemos el ID que la base de datos acaba de generar
-            new_id = cursor.lastrowid
-
-            # 3. Actualizamos el 'numero' para que sea igual al ID
-            await cursor.execute(
-                "UPDATE menus_semanales SET numero = %s WHERE id = %s",
-                (new_id, new_id)
-            )
-            
             await conn.commit()
             
+            # Devolvemos el lastrowid que es el ID automático de la base de datos
             return {
-                "msg": "Menú creado con éxito", 
-                "id": new_id
+                "msg": "Menú creado correctamente", 
+                "id": cursor.lastrowid
             }
     except Exception as e:
-        await conn.rollback()
-        raise HTTPException(status_code=500, detail=f"Error DB: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error en el servidor: {str(e)}")
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 # Para la Home: obtener el menú de una fecha específica
 async def get_menu_by_fecha(fecha: str):
@@ -145,52 +170,52 @@ async def delete_menu_semanal(menu_id: int):
 
 
 
-# async def asignar_plato_a_menu(menu_id: int, plato_id: int, rol: str):
-#     conn = None
-#     try:
-#         conn = await get_conexion()
-#         async with conn.cursor() as cursor:
-#             # Insertamos en la tabla puente (menu_semanal_platos)
-#             await cursor.execute(
-#                 """
-#                 INSERT INTO menu_semanal_platos (menu_id, plato_id, rol)
-#                 VALUES (%s, %s, %s)
-#                 """,
-#                 (menu_id, plato_id, rol)
-#             )
-#             await conn.commit()
-#             return {"msg": f"Plato asignado como {rol} correctamente"}
-#     except Exception as e:
-#         # Si el plato ya estaba asignado o hay error de base de datos, saltará aquí
-#         raise HTTPException(status_code=500, detail=f"Error al asignar plato: {str(e)}")
-#     finally:
-#         if conn:
-#             conn.close()
-
-# Cambiamos para que reciba 'datos' (el objeto que manda Angular)
-async def asignar_plato_a_menu(datos: dict): 
+async def asignar_plato_a_menu(menu_id: int, plato_id: int, rol: str):
     conn = None
     try:
         conn = await get_conexion()
         async with conn.cursor() as cursor:
-            # Sacamos los valores del diccionario 'datos'
-            # Usamos datos.get() por seguridad
-            m_id = datos.get('menu_id')
-            p_id = datos.get('plato_id')
-            rol = datos.get('rol')
-
+            # Insertamos en la tabla puente (menu_semanal_platos)
             await cursor.execute(
                 """
                 INSERT INTO menu_semanal_platos (menu_id, plato_id, rol)
                 VALUES (%s, %s, %s)
                 """,
-                (m_id, p_id, rol)
+                (menu_id, plato_id, rol)
             )
             await conn.commit()
-            return {"msg": f"Plato asignado correctamente"}
+            return {"msg": f"Plato asignado como {rol} correctamente"}
     except Exception as e:
-       
-        raise HTTPException(status_code=500, detail=f"Error DB: {str(e)}")
+        # Si el plato ya estaba asignado o hay error de base de datos, saltará aquí
+        raise HTTPException(status_code=500, detail=f"Error al asignar plato: {str(e)}")
     finally:
         if conn:
             conn.close()
+
+# # Cambiamos para que reciba 'datos' (el objeto que manda Angular)
+# async def asignar_plato_a_menu(datos: dict): 
+#     conn = None
+#     try:
+#         conn = await get_conexion()
+#         async with conn.cursor() as cursor:
+#             # Sacamos los valores del diccionario 'datos'
+#             # Usamos datos.get() por seguridad
+#             m_id = datos.get('menu_id')
+#             p_id = datos.get('plato_id')
+#             rol = datos.get('rol')
+
+#             await cursor.execute(
+#                 """
+#                 INSERT INTO menu_semanal_platos (menu_id, plato_id, rol)
+#                 VALUES (%s, %s, %s)
+#                 """,
+#                 (m_id, p_id, rol)
+#             )
+#             await conn.commit()
+#             return {"msg": f"Plato asignado correctamente"}
+#     except Exception as e:
+       
+#         raise HTTPException(status_code=500, detail=f"Error DB: {str(e)}")
+#     finally:
+#         if conn:
+#             conn.close()
