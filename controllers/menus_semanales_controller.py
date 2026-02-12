@@ -75,27 +75,23 @@ async def create_menu_semanal(menu: MenuSemanalCreate):
     try:
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
-            # Usamos ON DUPLICATE KEY UPDATE para que si el 'numero' ya existe, actualice los datos
-            # en lugar de lanzar el error de IntegrityError.
+            # Quitamos 'numero' de la lista de columnas y de los valores
+            # El ID se generará solo por ser AUTO_INCREMENT en la DB
             await cursor.execute(
                 """
-                INSERT INTO menus_semanales (numero, titulo, descripcion, precio, activo, fecha) 
-                VALUES (%s, %s, %s, %s, %s, %s)
-                ON DUPLICATE KEY UPDATE 
-                    titulo = VALUES(titulo),
-                    descripcion = VALUES(descripcion),
-                    precio = VALUES(precio),
-                    activo = VALUES(activo),
-                    fecha = VALUES(fecha)
+                INSERT INTO menus_semanales (titulo, descripcion, precio, activo, fecha) 
+                VALUES (%s, %s, %s, %s, %s)
                 """,
-                (menu.numero, menu.titulo, menu.descripcion, menu.precio, menu.activo, menu.fecha)
+                (menu.titulo, menu.descripcion, menu.precio, menu.activo, menu.fecha)
             )
             await conn.commit()
             
-            # Si se actualizó, el lastrowid puede no ser el nuevo, así que devolvemos un mensaje informativo
+            # Ahora lastrowid SIEMPRE será el ID real generado
+            new_id = cursor.lastrowid
+            
             return {
-                "msg": "Menú procesado correctamente (creado o actualizado)", 
-                "id": cursor.lastrowid if cursor.lastrowid != 0 else "existente"
+                "msg": "Menú creado correctamente", 
+                "id": new_id
             }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error en el servidor: {str(e)}")

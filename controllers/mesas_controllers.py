@@ -14,10 +14,20 @@ async def get_mesas():
     finally:
             conn.close()
 
-async def create_mesa(mesa:MesaCreate):
+async def create_mesa(mesa: MesaCreate):
+    conn = await get_conexion()
     try:
-        conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
+        
+            if mesa.capacidad <= 0:
+                raise HTTPException(status_code=400, detail="La capacidad debe ser mayor a 0")
+
+           
+            await cursor.execute("SELECT id FROM mesas WHERE numero_mesa = %s", (mesa.numero_mesa,))
+            if await cursor.fetchone():
+                raise HTTPException(status_code=400, detail=f"El número de mesa {mesa.numero_mesa} ya está registrado")
+
+    
             await cursor.execute(
                 "INSERT INTO mesas (numero_mesa, capacidad) VALUES (%s, %s)",
                 (mesa.numero_mesa, mesa.capacidad)
@@ -25,14 +35,18 @@ async def create_mesa(mesa:MesaCreate):
             await conn.commit()
             new_id = cursor.lastrowid
 
+           
             await cursor.execute("SELECT * FROM mesas WHERE id=%s", (new_id,))
             item = await cursor.fetchone()
 
-        return {"msg": "mesa creada correctamente", "item": item}
+        return {"msg": "Mesa creada correctamente", "item": item}
+
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        
+        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
     finally:
-            conn.close()
+        conn.close()
 
 async def update_mesa(mesa_id: int, mesa:MesaUpdate):
    

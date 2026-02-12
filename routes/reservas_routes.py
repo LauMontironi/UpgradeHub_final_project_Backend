@@ -18,10 +18,6 @@ async def delete_reserva(reserva_id: str, user=Depends(get_current_user)):
     return await reservas_controllers.delete_reserva(int(reserva_id), user)
 
 
-# RUTA PARA RESEÑA (PATCH)
-@router.patch("/{reserva_id}/review", status_code=200)
-async def add_review(reserva_id: str, reserva: ReservaReview, user=Depends(get_current_user)):
-    return await reservas_controllers.add_review(int(reserva_id), reserva, user)
 
 # RUTA PARA VER TODAS (GET - SOLO ADMIN)
 @router.get("", status_code=200)
