@@ -145,24 +145,52 @@ async def delete_menu_semanal(menu_id: int):
 
 
 
-async def asignar_plato_a_menu(menu_id: int, plato_id: int, rol: str):
+# async def asignar_plato_a_menu(menu_id: int, plato_id: int, rol: str):
+#     conn = None
+#     try:
+#         conn = await get_conexion()
+#         async with conn.cursor() as cursor:
+#             # Insertamos en la tabla puente (menu_semanal_platos)
+#             await cursor.execute(
+#                 """
+#                 INSERT INTO menu_semanal_platos (menu_id, plato_id, rol)
+#                 VALUES (%s, %s, %s)
+#                 """,
+#                 (menu_id, plato_id, rol)
+#             )
+#             await conn.commit()
+#             return {"msg": f"Plato asignado como {rol} correctamente"}
+#     except Exception as e:
+#         # Si el plato ya estaba asignado o hay error de base de datos, saltará aquí
+#         raise HTTPException(status_code=500, detail=f"Error al asignar plato: {str(e)}")
+#     finally:
+#         if conn:
+#             conn.close()
+
+# Cambiamos para que reciba 'datos' (el objeto que manda Angular)
+async def asignar_plato_a_menu(datos: dict): 
     conn = None
     try:
         conn = await get_conexion()
         async with conn.cursor() as cursor:
-            # Insertamos en la tabla puente (menu_semanal_platos)
+            # Sacamos los valores del diccionario 'datos'
+            # Usamos datos.get() por seguridad
+            m_id = datos.get('menu_id')
+            p_id = datos.get('plato_id')
+            rol = datos.get('rol')
+
             await cursor.execute(
                 """
                 INSERT INTO menu_semanal_platos (menu_id, plato_id, rol)
                 VALUES (%s, %s, %s)
                 """,
-                (menu_id, plato_id, rol)
+                (m_id, p_id, rol)
             )
             await conn.commit()
-            return {"msg": f"Plato asignado como {rol} correctamente"}
+            return {"msg": f"Plato asignado correctamente"}
     except Exception as e:
-        # Si el plato ya estaba asignado o hay error de base de datos, saltará aquí
-        raise HTTPException(status_code=500, detail=f"Error al asignar plato: {str(e)}")
+       
+        raise HTTPException(status_code=500, detail=f"Error DB: {str(e)}")
     finally:
         if conn:
             conn.close()
