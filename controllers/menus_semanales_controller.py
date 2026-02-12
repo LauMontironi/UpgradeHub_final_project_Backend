@@ -72,32 +72,39 @@ async def get_menu_semanal(menu_id: int):
 
 
 async def create_menu_semanal(menu: MenuSemanalCreate):
+    conn = await get_conexion()
     try:
-        conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
-            # Quitamos 'numero' de la lista de columnas y de los valores
-            # El ID se generará solo por ser AUTO_INCREMENT en la DB
+            # 1. Insertamos con un número provisional (usamos 0 o el que venga)
+            # Mantenemos el campo 'numero' para que la DB no proteste
             await cursor.execute(
                 """
-                INSERT INTO menus_semanales (titulo, descripcion, precio, activo, fecha) 
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO menus_semanales (numero, titulo, descripcion, precio, activo, fecha) 
+                VALUES (%s, %s, %s, %s, %s, %s)
                 """,
-                (menu.titulo, menu.descripcion, menu.precio, menu.activo, menu.fecha)
+                (0, menu.titulo, menu.descripcion, menu.precio, menu.activo, menu.fecha)
             )
+            
+            # 2. Obtenemos el ID que la base de datos acaba de generar
+            new_id = cursor.lastrowid
+
+            # 3. Actualizamos el 'numero' para que sea igual al ID
+            await cursor.execute(
+                "UPDATE menus_semanales SET numero = %s WHERE id = %s",
+                (new_id, new_id)
+            )
+            
             await conn.commit()
             
-            # Ahora lastrowid SIEMPRE será el ID real generado
-            new_id = cursor.lastrowid
-            
             return {
-                "msg": "Menú creado correctamente", 
+                "msg": "Menú creado con éxito", 
                 "id": new_id
             }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error en el servidor: {str(e)}")
+        await conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Error DB: {str(e)}")
     finally:
-        if conn:
-            conn.close()
+        conn.close()
 
 # Para la Home: obtener el menú de una fecha específica
 async def get_menu_by_fecha(fecha: str):
