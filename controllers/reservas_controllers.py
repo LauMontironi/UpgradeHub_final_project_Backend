@@ -100,7 +100,7 @@ async def create_reserva(reserva: ReservaCreate, user, background_tasks: Backgro
             # 5. Lanzar email si tenemos destinatario
             if email_destino:
                 print("📩 Enviando email EN EL REQUEST para:", email_destino)
-                await enviar_confirmacion_reserva(email_destino, item)
+                background_tasks.add_task(enviar_confirmacion_reserva, email_destino, item)
                 print("✅ Terminó la función enviar_confirmacion_reserva()")
             else:
                 print("⚠️ No se encontró email para el usuario:", user["id"])
