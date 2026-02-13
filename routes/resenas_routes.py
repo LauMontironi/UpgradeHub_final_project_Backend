@@ -15,8 +15,8 @@ async def get_resenas(admin=Depends(is_admin)):
     return await resenas_controller.get_all_resenas()
 
 @router.get("/mis-resenas", status_code=200)
-async def get_mis_resenas(token_data=Depends(get_current_user)):
-    return await resenas_controller.get_resenas_por_usuario(int(token_data.id))
+async def get_mis_resenas(user=Depends(get_current_user)):
+    return await resenas_controller.get_resenas_por_usuario(int(user["id"]))
 
 @router.put("/{resena_id}", status_code=200)
 async def update_resena(

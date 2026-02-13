@@ -56,3 +56,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsI
 ### . Ver todas las reseñas (Como Admin)
 GET {{host}}:{{port}}/resenas/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDgwNTg5Mn0.kP36alwOtIo9KmnIn6VMTwQfNnX5lcjhE8-0AQsWrxc
+
+
+### . Ver todas las reseñas (del usuario actual)
+GET {{host}}:{{port}}/resenas/mis-resenas
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTMsImVtYWlsIjoibGF1Lm1vbnRpcm9uaUBnbWFpbC5jb20iLCJub21icmUiOiJMYXVyYU9LICIsInJvbCI6ImNsaWVudGUiLCJleHAiOjE3NzEwMjU2NDV9.Sa_zrodkm8XZcUYeIg0TdDmUDnG_kLM8bfBhzHfNoRM

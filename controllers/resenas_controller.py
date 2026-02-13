@@ -60,20 +60,20 @@ async def get_all_resenas():
         conn.close()
 
 async def get_resenas_por_usuario(usuario_id: int):
+    conn = await get_conexion()
     try:
-        conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
-            # Hacemos un LEFT JOIN para traer los datos de la reseña si existen
             query = """
-                SELECT 
-                    r.*, 
-                    res.id AS resena_id, 
-                    res.comentario AS comentario_resena, 
-                    res.puntuacion 
-                FROM reservas r
-                LEFT JOIN resenas res ON r.id = res.reserva_id
-                WHERE r.usuario_id = %s
-                ORDER BY r.fecha DESC
+                SELECT
+                    id,
+                    reserva_id,
+                    usuario_id,
+                    comentario,
+                    puntuacion,
+                    fecha
+                FROM resenas
+                WHERE usuario_id = %s
+                ORDER BY fecha DESC
             """
             await cursor.execute(query, (usuario_id,))
             return await cursor.fetchall()
