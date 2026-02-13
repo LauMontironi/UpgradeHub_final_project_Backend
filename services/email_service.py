@@ -1,9 +1,10 @@
 from fastapi_mail import FastMail, MessageSchema, MessageType
 from core.email_config import conf
+import traceback
 
 
 async def enviar_confirmacion_reserva(email_cliente: str, datos_reserva: dict):
-    EMAIL_ADMIN = "lau.montironi@gmail.com" 
+    EMAIL_ADMIN = "lau.montironi@gmail.com"
 
     html = f"""
     <html>
@@ -21,12 +22,22 @@ async def enviar_confirmacion_reserva(email_cliente: str, datos_reserva: dict):
     </html>
     """
 
-    message = MessageSchema(
-        subject="Confirmación de tu Reserva - Restaurante",
-        recipients=[email_cliente],
-        body=html,
-        subtype=MessageType.html
-    )
+    try:
+        print("📨 Intentando enviar email a:", email_cliente)
 
-    fm = FastMail(conf)
-    await fm.send_message(message)
+        message = MessageSchema(
+            subject="Confirmación de tu Reserva - Restaurante",
+            recipients=[email_cliente],
+            body=html,
+            subtype=MessageType.html
+        )
+
+        fm = FastMail(conf)
+        await fm.send_message(message)
+
+        print("✅ Email enviado correctamente a:", email_cliente)
+
+    except Exception as e:
+        print("❌ ERROR enviando email:")
+        print(str(e))
+        traceback.print_exc()

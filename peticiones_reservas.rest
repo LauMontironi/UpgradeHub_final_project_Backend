@@ -12,11 +12,11 @@ Content-Type: application/json
 # Prueba esto con una mesa_id que exista
 POST {{host}}:{{port}}/reservas
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTMsImVtYWlsIjoibGF1Lm1vbnRpcm9uaUBnbWFpbC5jb20iLCJub21icmUiOiJMYXVyYU9LICIsInJvbCI6ImNsaWVudGUiLCJleHAiOjE3NzEwMDkxMTF9.hJmOWwOP_O7Nl46I1OlGRNv3lJmvcRxBsZYqm3kYb6s
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTMsImVtYWlsIjoibGF1Lm1vbnRpcm9uaUBnbWFpbC5jb20iLCJub21icmUiOiJMYXVyYU9LICIsInJvbCI6ImNsaWVudGUiLCJleHAiOjE3NzEwMTk0MDR9.tHhnv-wPcj9ALOdHbRl-S8gYDqK6TGVqaAWzxZnU8u8
 
 {
-    "fecha": "2026-02-15",
-    "hora": "14:00",
+    "fecha": "2026-02-25",
+    "hora": "13:00",
     "mesa_id": 2,
     "party_size": 4,
     "resena": "Alergia al marisco y una trona, por favor"
