@@ -1,49 +1,106 @@
-from fastapi import HTTPException
+from fastapi import BackgroundTasks, HTTPException
 import aiomysql as aio
 from db.config import get_conexion
 from models.reserva_model import ReservaCreate, ReservaReview
+from services.email_service import enviar_confirmacion_reserva
 
-async def create_reserva(reserva: ReservaCreate, user):
+
+# async def create_reserva(reserva: ReservaCreate, user, background_tasks: BackgroundTasks):
+#     conn = None
+#     try:
+#         conn = await get_conexion()
+#         async with conn.cursor(aio.DictCursor) as cursor:
+            
+#             # 1. Validar disponibilidad
+#             await cursor.execute(
+#                 """
+#                 SELECT id FROM reservas 
+#                 WHERE mesa_id=%s AND fecha=%s AND hora=%s AND estado='confirmada'
+#                 """,
+#                 (reserva.mesa_id, reserva.fecha, reserva.hora)
+#             )
+#             existing = await cursor.fetchone()
+#             if existing:
+#                 raise HTTPException(status_code=400, detail="Esa mesa ya está reservada para esa fecha y hora")
+
+#             # 2. Insertar con todas las columnas
+#             await cursor.execute(
+#                 """
+#                 INSERT INTO reservas (usuario_id, mesa_id, fecha, hora, party_size, estado, resena)
+#                 VALUES (%s, %s, %s, %s, %s, 'confirmada', %s)
+#                 """,
+#                 (user["id"], reserva.mesa_id, reserva.fecha, reserva.hora, reserva.party_size, reserva.resena)
+#             )
+#             await conn.commit()
+#             new_id = cursor.lastrowid
+
+#             # 3. Recuperar la reserva creada
+#             await cursor.execute("SELECT * FROM reservas WHERE id=%s", (new_id,))
+#             item = await cursor.fetchone()
+
+#             # 4. ENVIAR EMAIL EN SEGUNDO PLANO
+#             # Usamos los datos del 'user' (que vienen del token) y el 'item' recién creado
+#             if user.get("email"):
+#                 background_tasks.add_task(
+#                     enviar_confirmacion_reserva, 
+#                     user["email"], 
+#                     item
+#                 )
+
+#         return {"msg": "reserva creada correctamente", "item": item}
+
+#     except HTTPException as he:
+#         raise he
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+#     finally:
+#         if conn:
+#             conn.close()
+
+async def create_reserva(reserva: ReservaCreate, user, background_tasks: BackgroundTasks):
     conn = None
     try:
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
-            # 1. Validar disponibilidad (Misma mesa, misma fecha, misma hora)
-            await cursor.execute(
-                """
-                SELECT id FROM reservas 
-                WHERE mesa_id=%s AND fecha=%s AND hora=%s AND estado='confirmada'
-                """,
-                (reserva.mesa_id, reserva.fecha, reserva.hora)
-            )
-            existing = await cursor.fetchone()
-            if existing:
-                raise HTTPException(status_code=400, detail="Esa mesa ya está reservada para esa fecha y hora")
-
-            # 2. Insertar con todas las columnas
-            await cursor.execute(
-                """
-                INSERT INTO reservas (usuario_id, mesa_id, fecha, hora, party_size, estado, resena)
-                VALUES (%s, %s, %s, %s, %s, 'confirmada', %s)
-                """,
-                (user["id"], reserva.mesa_id, reserva.fecha, reserva.hora, reserva.party_size, reserva.resena)
-            )
+            # ... (todo tu código de validación e insert que ya funciona) ...
+            
             await conn.commit()
             new_id = cursor.lastrowid
-
-            # 3. Recuperar la reserva creada
+            
+            # 1. Recuperar la reserva completa
             await cursor.execute("SELECT * FROM reservas WHERE id=%s", (new_id,))
             item = await cursor.fetchone()
 
-        return {"msg": "reserva creada correctamente", "item": item}
+            # 2. ASEGURAR EL EMAIL (El arreglo)
+            email_destino = user.get("email")
+            
+            # Si el token de Angular no traía el email, lo buscamos en la DB
+            if not email_destino:
+                await cursor.execute("SELECT email FROM usuarios WHERE id = %s", (user["id"],))
+                res_user = await cursor.fetchone()
+                if res_user:
+                    email_destino = res_user["email"]
 
-    except HTTPException as he:
-        raise he
+            # 3. Enviar el mail solo si encontramos un email
+            if email_destino:
+                background_tasks.add_task(
+                    enviar_confirmacion_reserva, 
+                    email_destino, 
+                    item
+                )
+            else:
+                print("⚠️ ADVERTENCIA: No se pudo encontrar el email para enviar la confirmación")
+
+        return {"msg": "reserva creada correctamente", "item": item}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        if conn:
+            await conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
         if conn:
             conn.close()
+
+
 
 async def get_my_reservas(user):
     conn = None

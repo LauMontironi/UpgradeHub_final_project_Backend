@@ -34,8 +34,8 @@ POST {{host}}:{{port}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "susana@horia.com",
-  "password": "1234"
+  "email": "lau.montironi@gmail.com",
+  "password": "Deemo1234"
 }
 
 

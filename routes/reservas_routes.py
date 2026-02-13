@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from core.dependences import get_current_user, is_admin
 from controllers import reservas_controllers
 from models.reserva_model import ReservaCreate, ReservaReview
@@ -6,8 +6,8 @@ from models.reserva_model import ReservaCreate, ReservaReview
 router = APIRouter()
 
 @router.post("", status_code=201)
-async def create_reserva(reserva: ReservaCreate, user=Depends(get_current_user)):
-    return await reservas_controllers.create_reserva(reserva, user)
+async def create_reserva(reserva: ReservaCreate,background_tasks: BackgroundTasks, user=Depends(get_current_user)):
+    return await reservas_controllers.create_reserva(reserva, user, background_tasks)
 
 @router.get("/me", status_code=200)
 async def get_my_reservas(user=Depends(get_current_user)):
