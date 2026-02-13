@@ -23,3 +23,7 @@ async def update_plato(plato_id: str, plato: PlatoUpdate, admin=Depends(is_admin
 @router.delete("/{plato_id}", status_code=200)
 async def delete_plato(plato_id: str, admin=Depends(is_admin)):
     return await plaatos_controller.delete_plato(int(plato_id))
+
+@router.get("/{plato_id}", status_code=200)
+async def get_plato(plato_id: str):
+    return await plaatos_controller.get_plato_by_id(int(plato_id))

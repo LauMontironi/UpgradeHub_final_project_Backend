@@ -84,3 +84,25 @@ async def delete_plato(plato_id):
         raise HTTPException(status_code=500, detail=f"Error al eliminar: {str(e)}")
     finally:
         conn.close()
+
+
+async def get_plato_by_id(plato_id: int):
+    try:
+        conn = await get_conexion()
+        async with conn.cursor(aio.DictCursor) as cursor:
+            # Ejecutamos la consulta para un solo plato
+            await cursor.execute("SELECT * FROM platos WHERE id = %s", (plato_id,))
+            plato = await cursor.fetchone() # Traemos solo un resultado
+
+            if not plato:
+                raise HTTPException(status_code=404, detail="El plato no existe")
+            
+            return plato
+            
+    except Exception as e:
+        # Si ya es una HTTPException (como el 404), la relanzamos
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=f"Error en el servidor: {str(e)}")
+    finally:
+        conn.close()
