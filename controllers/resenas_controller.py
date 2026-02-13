@@ -13,7 +13,7 @@ async def create_resena(resena, usuario_id: int):
             # 1. Validamos que la reserva exista, sea del usuario, sea pasada Y NO tenga reseña ya
             await cursor.execute(
                 """SELECT id FROM reservas 
-                   WHERE id = %s AND usuario_id = %s AND fecha < %s""", 
+                   WHERE id = %s AND usuario_id = %s AND fecha <= %s""", 
                 (resena.reserva_id, usuario_id, ahora)
             )
             reserva_valida = await cursor.fetchone()

@@ -62,40 +62,52 @@ async def create_reserva(reserva: ReservaCreate, user, background_tasks: Backgro
     try:
         conn = await get_conexion()
         async with conn.cursor(aio.DictCursor) as cursor:
-            # ... (todo tu código de validación e insert que ya funciona) ...
-            
+            # 1. Validar disponibilidad
+            await cursor.execute(
+                """
+                SELECT id FROM reservas 
+                WHERE mesa_id=%s AND fecha=%s AND hora=%s AND estado='confirmada'
+                """,
+                (reserva.mesa_id, reserva.fecha, reserva.hora)
+            )
+            existing = await cursor.fetchone()
+            if existing:
+                raise HTTPException(status_code=400, detail="Esa mesa ya está reservada")
+
+            # 2. Insertar reserva
+            await cursor.execute(
+                """
+                INSERT INTO reservas (usuario_id, mesa_id, fecha, hora, party_size, estado, resena)
+                VALUES (%s, %s, %s, %s, %s, 'confirmada', %s)
+                """,
+                (user["id"], reserva.mesa_id, reserva.fecha, reserva.hora, reserva.party_size, reserva.resena)
+            )
             await conn.commit()
             new_id = cursor.lastrowid
-            
-            # 1. Recuperar la reserva completa
+
+            # 3. Recuperar item para el email
             await cursor.execute("SELECT * FROM reservas WHERE id=%s", (new_id,))
             item = await cursor.fetchone()
 
-            # 2. ASEGURAR EL EMAIL (El arreglo)
+            # 4. Asegurar Email (Plan B por si Angular no lo envía en el token)
             email_destino = user.get("email")
-            
-            # Si el token de Angular no traía el email, lo buscamos en la DB
             if not email_destino:
                 await cursor.execute("SELECT email FROM usuarios WHERE id = %s", (user["id"],))
                 res_user = await cursor.fetchone()
                 if res_user:
                     email_destino = res_user["email"]
 
-            # 3. Enviar el mail solo si encontramos un email
+            # 5. Lanzar email si tenemos destinatario
             if email_destino:
-                background_tasks.add_task(
-                    enviar_confirmacion_reserva, 
-                    email_destino, 
-                    item
-                )
-            else:
-                print("⚠️ ADVERTENCIA: No se pudo encontrar el email para enviar la confirmación")
+                background_tasks.add_task(enviar_confirmacion_reserva, email_destino, item)
 
         return {"msg": "reserva creada correctamente", "item": item}
+
+    except HTTPException as he:
+        raise he
     except Exception as e:
-        if conn:
-            await conn.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error interno: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
         if conn:
             conn.close()
