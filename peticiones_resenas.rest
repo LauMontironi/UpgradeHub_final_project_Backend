@@ -7,25 +7,52 @@
 # Prueba esto con un usuario que SEPAS que tiene una reserva pasada
 POST {{host}}:{{port}}/resenas/
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoic3VzYW5hQGhvcmlhLmNvbSIsIm5vbWJyZSI6IlN1c2FuYSAiLCJyb2wiOiJjbGllbnRlIiwiZXhwIjoxNzcwOTk3Nzc4fQ.Z787PGQl16JahPckvzTZuv4uSSs9ejP-s19_kvyN8CQ
 
 {
-    "comentario": "La comida estuvo increíble, especialmente el solomillo. El servicio fue un poco lento pero valió la pena.",
+    "reserva_id": 3,
+    "comentario": "La cena estuvo espectacular, el sushi de anguila es de otro mundo. ¡Volveremos!",
     "puntuacion": 5,
-    "fecha": "2026-02-11"
+    "fecha": "2026-02-13"
 }
 
 ### 2. Intentar crear reseña sin reserva (Debería dar 403)
 POST {{host}}:{{port}}/resenas/
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoic3VzYW5hQGhvcmlhLmNvbSIsIm5vbWJyZSI6IlN1c2FuYSAiLCJyb2wiOiJjbGllbnRlIiwiZXhwIjoxNzcwOTk3Nzc4fQ.Z787PGQl16JahPckvzTZuv4uSSs9ejP-s19_kvyN8CQ
 
 {
-    "comentario": "Intento de reseña fraudulenta",
+    "reserva_id": 999,
+    "comentario": "Intento de estafa",
     "puntuacion": 1,
-    "fecha": "2026-02-11"
+    "fecha": "2026-02-13"
 }
 
-### 3. Ver todas las reseñas (Como Admin)
+### 3. Intentar repetir reseña para la misma reserva
+# Debería devolver 400: "Ya has escrito una reseña para esta visita"
+POST {{host}}:{{port}}/resenas/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoic3VzYW5hQGhvcmlhLmNvbSIsIm5vbWJyZSI6IlN1c2FuYSAiLCJyb2wiOiJjbGllbnRlIiwiZXhwIjoxNzcwOTk3Nzc4fQ.Z787PGQl16JahPckvzTZuv4uSSs9ejP-s19_kvyN8CQ
+
+{
+    "reserva_id": 3,
+    "comentario": "Intento repetir el comentario",
+    "puntuacion": 5,
+    "fecha": "2026-02-13"
+}
+
+### . Actualizar una reseña existente
+# Cambia el ID (1) por el ID de la RESEÑA que quieras editar
+PUT {{host}}:{{port}}/resenas/2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoic3VzYW5hQGhvcmlhLmNvbSIsIm5vbWJyZSI6IlN1c2FuYSAiLCJyb2wiOiJjbGllbnRlIiwiZXhwIjoxNzcwOTk4NzUzfQ.Y5XucWCgRh3HmSPOwDISboWwhbEshoQ66RKjc2zpoqA
+
+{
+    "reserva_id": 3, 
+    "comentario": "Edito mi opinión: La cena fue increíble, pero el postre tardó un poco. Aún así, un 5/5.",
+    "puntuacion": 5,
+    "fecha": "2026-02-13"
+}
+### . Ver todas las reseñas (Como Admin)
 GET {{host}}:{{port}}/resenas/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkByZXN0YXVyYW50ZS5jb20iLCJub21icmUiOiJBZG1pbiBQcmluY2lwYWwiLCJyb2wiOiJhZG1pbiIsImV4cCI6MTc3MDgwNTg5Mn0.kP36alwOtIo9KmnIn6VMTwQfNnX5lcjhE8-0AQsWrxc

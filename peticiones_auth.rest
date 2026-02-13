@@ -28,6 +28,17 @@ Content-Type: application/json
   "password": "Demo1234"
 }
 
+###🔑 POST /auth/login
+
+POST {{host}}:{{port}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "susana@horia.com",
+  "password": "1234"
+}
+
+
 ###  🔑 loguearse como admin para ver las rutas de post put en peticiones_meus delet e menu 
 POST {{host}}:{{port}}/auth/login
 Content-Type: application/json
