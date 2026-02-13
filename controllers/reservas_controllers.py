@@ -85,11 +85,11 @@ async def create_reserva(reserva: ReservaCreate, user, background_tasks: Backgro
             await conn.commit()
             new_id = cursor.lastrowid
 
-            # 3. Recuperar item para el email
+            # 3. Recuperar datos para el email
             await cursor.execute("SELECT * FROM reservas WHERE id=%s", (new_id,))
             item = await cursor.fetchone()
 
-            # 4. Asegurar Email (Plan B por si Angular no lo envía en el token)
+            # 4. Plan B: Asegurar el email si no viene en el token
             email_destino = user.get("email")
             if not email_destino:
                 await cursor.execute("SELECT email FROM usuarios WHERE id = %s", (user["id"],))
@@ -104,11 +104,15 @@ async def create_reserva(reserva: ReservaCreate, user, background_tasks: Backgro
         return {"msg": "reserva creada correctamente", "item": item}
 
     except HTTPException as he:
+        # Esto captura los errores 400 que lanzamos nosotros
         raise he
     except Exception as e:
-        print(f"Error interno: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        # Esto captura errores inesperados
+        if conn:
+            await conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
     finally:
+        # Esto asegura que la conexión siempre se cierre
         if conn:
             conn.close()
 
