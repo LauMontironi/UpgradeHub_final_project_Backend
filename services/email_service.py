@@ -1,12 +1,13 @@
 import os
 import resend
 
+# Configuración de la API Key
 resend.api_key = os.getenv("RESEND_API_KEY")
 
 ADMIN_EMAIL = "lau.montironi@gmail.com"
 
 async def enviar_confirmacion_reserva(email_cliente: str, datos_reserva: dict):
-
+    
     html = f"""
     <html>
       <body style="background-color:#1a1a1a;color:#e6dcc9;font-family:sans-serif;padding:20px;">
@@ -25,12 +26,22 @@ async def enviar_confirmacion_reserva(email_cliente: str, datos_reserva: dict):
     """
 
     if not resend.api_key:
-        raise RuntimeError("RESEND_API_KEY no está configurada")
+        print("⚠️ ERROR: RESEND_API_KEY no está configurada en las variables de entorno")
+        return
 
-    # Enviamos al cliente Y al admin
-    resend.Emails.send({
-        "from": "onboarding@resend.dev",  # Para pruebas
-        "to": [email_cliente, ADMIN_EMAIL],
-        "subject": "Confirmación de Reserva - UpgradeFood",
-        "html": html
-    })
+    try:
+        # Enviamos al cliente Y al admin
+        # Nota: Si el dominio no está verificado, Resend fallará si 'email_cliente' 
+        # no es tu propio correo (lau.montironi@gmail.com)
+        resend.Emails.send({
+            "from": "onboarding@resend.dev",  
+            "to": [email_cliente, ADMIN_EMAIL],
+            "subject": f"Confirmación de Reserva - {datos_reserva['fecha']}",
+            "html": html
+        })
+        print(f"✅ Intento de envío de email completado para: {email_cliente}")
+
+    except Exception as e:
+        # Capturamos el error para que Railway no se vaya a 'Crashed'
+        print(f"❌ Error de Resend: {str(e)}")
+        print("ℹ️ Nota: Recuerda que Resend solo permite enviar a tu propio mail si no tienes dominio verificado.")
