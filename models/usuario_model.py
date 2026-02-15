@@ -15,7 +15,7 @@ class UsuarioCreate(BaseModel):
 
 
 
-# 📤 Lo que la API devuelve al frontend (sin contraseña)
+# 📤 Lo que la API devuelve al frontend (sin contraseña)( para interfaz de usuario by id)
 class UsuarioOut(BaseModel):
     id: int
     nombre: str
