@@ -34,3 +34,17 @@ class UsuarioOut(BaseModel):
 class UsuarioLogin(BaseModel):
     email: EmailStr
     password: str
+
+class UsuarioUpdate(BaseModel):
+    nombre: Optional[str] = None
+    apellido: Optional[str] = None
+    telefono: Optional[str] = None
+    edad: Optional[int] = None
+    alergias: Optional[str] = None
+
+##no dejo que modifiquen ni mail ni dni ni rol asi no toco ni registro ni login 
+
+
+class UsuarioPasswordUpdate(BaseModel):
+    current_password: str
+    new_password: str
